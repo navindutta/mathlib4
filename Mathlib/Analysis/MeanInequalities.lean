@@ -1200,3 +1200,27 @@ theorem Lp_add_le (hp : 1 ≤ p) :
 end ENNReal
 
 end HoelderMinkowski
+
+/-- The 3-variable algebraic Arithmetic Mean - Geometric Mean (AM-GM) inequality on `ℝ`.
+    Proved constructively using an exact Sum-of-Squares (SoS) polynomial decomposition:
+    $$(a+b+c)^3 - 27abc = \frac{1}{2}(a+b+c)\sum_{cyc}(a-b)^2 + 3\sum_{cyc} a(b-c)^2 \ge 0$$
+-/
+theorem Real.am_gm_three (a b c : ℝ) (ha : 0 ≤ a) (hb : 0 ≤ b) (hc : 0 ≤ c) :
+    a * b * c ≤ ((a + b + c) / 3) ^ 3 := by
+  have h_identity :
+      (a + b + c) ^ 3 - 27 * (a * b * c)
+        = (1 / 2 : ℝ) * (a + b + c) * ((a - b) ^ 2 + (b - c) ^ 2 + (c - a) ^ 2)
+          + 3 * (a * (b - c) ^ 2 + b * (c - a) ^ 2 + c * (a - b) ^ 2) := by ring
+  have h_sos_part1 : 0 ≤ (1 / 2 : ℝ) * (a + b + c) * ((a - b) ^ 2 + (b - c) ^ 2 + (c - a) ^ 2) := by
+    positivity
+  have h_sos_part2 : 0 ≤ 3 * (a * (b - c) ^ 2 + b * (c - a) ^ 2 + c * (a - b) ^ 2) := by
+    positivity
+  have h_diff_nonneg : 0 ≤ (a + b + c) ^ 3 - 27 * (a * b * c) := by
+    rw [h_identity]
+    linarith
+  have h_cube_bound : 27 * (a * b * c) ≤ (a + b + c) ^ 3 := by
+    linarith
+  calc a * b * c
+      = (27 * (a * b * c)) / 27 := by ring
+    _ ≤ ((a + b + c) ^ 3) / 27 := by linarith
+    _ = ((a + b + c) / 3) ^ 3 := by ring
